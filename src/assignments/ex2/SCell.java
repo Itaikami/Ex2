@@ -34,34 +34,52 @@ public class SCell implements Cell {
     }
 
     /** finds the index of our main operator (the last one we need to calculate)
-     *
+     * op represents the current operators "value" ('*','/'=0.5,'+','-'=0,everything inside "()" is raised by 1)
+     * issog determines if the current operator is inside "()" or not
+     * curr represents the "value" of the operator in the current max index represented by ind
      * @param form the input string representing a formula
-     * @return ind representing the main operator
+     * @return ind representing the index of the main operator
      */
-    public static int findIntOfMainOp(String form)
+    public static int findIndOfMainOp(String form)
     {
         int ind=-1;
-        double op=0,curr=0;//(1+2)*3*4
+        boolean issog=false;
+        double op=0,curr=1.5;//(1+2*2)*3*4
         for (int i = 0; i < form.length(); i++) {
             char c=form.charAt(i);
-            switch (c)
+            if(c=='(')
+            {issog=true;}
+            if(c==')')
+            {issog=false;}
+            if(isOp(c))
             {
-                case '(':
-                    op=op+1;
-                    break;
-                case ')':
-                    op=op-1;
-                    break;
-                case '*','/':
-                    op=0.5;
-                    break;
 
+                switch (c)
+                {
+                    case '/','*':
+                    {
+                        op=0.5;
+                        break;
+                    }
+                    case '+','-':
+                    {
+                        op=0;
+                        break;
+                    }
+                }
+                if(issog)
+                {op++;}
+                if(op<curr||op==curr)
+                {
+                    ind=i;
+                    curr=op;
+                }
             }
-            if((op<curr||op==curr)&&isOp(c))
-            {    ind=i;
-                curr=op;}
+
 
         }
+
+
 
         return ind;
     }
@@ -88,18 +106,40 @@ public class SCell implements Cell {
     }
 
     /** calculates the value of a string representing a formula
-     *
+     *  will check if the form is valid and remove the "=" at the start for comfort
      * @param form the input string
      * @return the calculated value of the formula
      */
     public static double eval(String form)
     {
-        double sum=-1;
-        if(form.charAt(1)=='('&&form.charAt(form.length()-1)==')')
-            eval(form.substring(1,form.length()-1));
 
 
-        return sum;
+        int mainop=findIndOfMainOp(form);
+        if(isNumber(form))
+        {   return Double.parseDouble(form);}
+        if(form.charAt(0)=='('&&form.indexOf(')')==form.length()-1)
+        {return eval(form.substring(1,form.length()-1));}
+        switch (form.charAt(mainop))
+        {
+            case '+':
+            {
+                return (eval(form.substring(0,mainop))+eval(form.substring(mainop+1)));
+            }
+            case '-':
+            {
+                return (eval(form.substring(0,mainop))-eval(form.substring(mainop+1)));
+            }
+            case '*':
+            {
+                return (eval(form.substring(0,mainop))*eval(form.substring(mainop+1)));
+            }
+            case '/':
+            {
+                return (eval(form.substring(0,mainop))/eval(form.substring(mainop+1)));
+            }
+
+        }
+        return -1;//default value even though we assume that the form is valid
     }
 
     public static boolean isFormula(String s)

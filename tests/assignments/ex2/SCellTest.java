@@ -9,12 +9,13 @@ class SCellTest {
     }
 
     @org.junit.jupiter.api.Test
-    void findIntOfMainOp() {
-        assertEquals(SCell.findIntOfMainOp("(1+2)*3*4)"),7);
+    void findIndOfMainOp() {
+        assertEquals(SCell.findIndOfMainOp("(1+2)*3/(2/5)"),7);
     }
 
     @org.junit.jupiter.api.Test
     void eval() {
+        assertEquals(SCell.eval("(1+2)*3/(2/5)"),22.5);
     }
 
     @org.junit.jupiter.api.Test
