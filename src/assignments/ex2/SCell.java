@@ -106,49 +106,66 @@ public class SCell implements Cell {
     }
 
     /** calculates the value of a string representing a formula
-     *  will check if the form is valid and remove the "=" at the start for comfort
+     *  assumes the form is valid and handles some exceptions
+     *  calls the function recursively using the last operator that needs to be done
      * @param form the input string
      * @return the calculated value of the formula
      */
-    public static double eval(String form)
-    {
+    public static double eval(String form) {
 
 
-        int mainop=findIndOfMainOp(form);
-        if(isNumber(form))
-        {   return Double.parseDouble(form);}
-        if(form.charAt(0)=='('&&form.indexOf(')')==form.length()-1)
-        {return eval(form.substring(1,form.length()-1));}
-        switch (form.charAt(mainop))
-        {
-            case '+':
-            {
-                return (eval(form.substring(0,mainop))+eval(form.substring(mainop+1)));
-            }
-            case '-':
-            {
-                return (eval(form.substring(0,mainop))-eval(form.substring(mainop+1)));
-            }
-            case '*':
-            {
-                return (eval(form.substring(0,mainop))*eval(form.substring(mainop+1)));
-            }
-            case '/':
-            {
-                return (eval(form.substring(0,mainop))/eval(form.substring(mainop+1)));
-            }
-
+        int mainop = findIndOfMainOp(form);
+        if (isNumber(form)) {
+            return Double.parseDouble(form);
         }
-        return -1;//default value even though we assume that the form is valid
-    }
+        if (form.charAt(0) == '(' && form.indexOf(')') == form.length() - 1) {
+            return eval(form.substring(1, form.length() - 1));
+        }
+        if (mainop == -1)
+        {throw new IllegalArgumentException(Ex2Utils.ERR_FORM);}
+            switch (form.charAt(mainop)) {
+                case '+': {
+                    return (eval(form.substring(0, mainop)) + eval(form.substring(mainop + 1)));
+                }
+                case '-': {
+                    return (eval(form.substring(0, mainop)) - eval(form.substring(mainop + 1)));
+                }
+                case '*': {
+                    return (eval(form.substring(0, mainop)) * eval(form.substring(mainop + 1)));
+                }
+                case '/': {
+                    double denominator = eval(form.substring(mainop + 1));
+                    if (denominator == 0) {
+                        throw new ArithmeticException("Math_ERR");
 
-    public static boolean isFormula(String s)
+                    }
+                    return (eval(form.substring(0, mainop)) / eval(form.substring(mainop + 1)));
+
+
+                }
+
+            }
+            return Double.NaN;//invalid value in case the form is wrong
+        }
+    public static boolean isFormula(String s)//
     {
-        boolean ans = true;
+        boolean ans=true;
         if((s.charAt(0)!='='))
         {ans=false;}
-        if(!isNumber(s.substring(1)))
+        String form = s.substring(1);
+
+        try
+        {
+            double val=eval(form);
+            if(Double.isNaN(val))
+            {
+                throw new IllegalArgumentException(Ex2Utils.ERR_FORM);
+            }
+        }
+        catch (Exception e)
         {ans=false;}
+
+
 
         return ans;
     }

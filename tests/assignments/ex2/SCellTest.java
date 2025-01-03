@@ -20,6 +20,8 @@ class SCellTest {
 
     @org.junit.jupiter.api.Test
     void isFormula() {
+        assertTrue(SCell.isFormula("=(1+2)*3/(2/5)"));
+        assertFalse(SCell.isFormula("=155/(1+2))"));
     }
 
     @org.junit.jupiter.api.Test
