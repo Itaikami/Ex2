@@ -1,7 +1,7 @@
 package assignments.ex2;
 // Add your documentation below:
 
-/** This Class represents each cell in the spreadsheet abd allows us to set a different type to each cell whether it is
+/** This Class represents each cell in the spreadsheet and allows us to set a different type to each cell whether it is
  * a text, a number or a formula, and we can perform our operators with each cell that isn't a text.
  */
 public class SCell implements Cell {
@@ -11,9 +11,44 @@ public class SCell implements Cell {
 
     public SCell(String s) {
         // Add your code here
+
         setData(s);
+        setType(deterType(s));
     }
 
+    /**determines the type of string (whether it's text, number, formula or an error)
+     *
+     * @param s represents the line of a cell
+     * @return an int representing the type of s
+     */
+    public static int deterType(String s)
+{
+    if(isText(s))
+        return Ex2Utils.TEXT;
+    if(isNumber(s))
+        return Ex2Utils.NUMBER;
+    try {
+        boolean formula= isFormula(s);
+        if(formula)
+        {return Ex2Utils.FORM;}
+    }
+    catch (Exception e)
+    { return Ex2Utils.ERR_FORM_FORMAT;}
+
+    return Ex2Utils.ERR;
+}
+    /** checks if a string is a "text"
+     * if it is not a number or a formula or starts with '=' then it's a text
+     * @param s represents the line of a cell
+     * @return
+     */
+    public static boolean isText(String s)
+    {
+        boolean ans=true;
+        if(isNumber(s)||isFormula(s)||(s.charAt(0)=='='))
+        {ans = false;}
+        return ans;
+    }
     /** checks if we can cast a string to a double without getting an error
      *
      * @param s the input string
@@ -147,6 +182,11 @@ public class SCell implements Cell {
             }
             return Double.NaN;//invalid value in case the form is wrong
         }
+
+    /** receives a String and checks if it's a valid formula
+      * @param s
+     * @return true if it's a valid formula and false if it isn't
+     */
     public static boolean isFormula(String s)//
     {
         boolean ans=true;

@@ -1,11 +1,16 @@
 package assignments.ex2;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SCellTest {
 
     @org.junit.jupiter.api.Test
     void isNumber() {
+        assertTrue(SCell.isNumber("123"));
+        assertTrue(SCell.isNumber("12"));
+        assertFalse(SCell.isNumber("a123"));
     }
 
     @org.junit.jupiter.api.Test
@@ -50,5 +55,12 @@ class SCellTest {
 
     @org.junit.jupiter.api.Test
     void setOrder() {
+    }
+
+    @Test
+    void isText() {
+        assertTrue(SCell.isText("sss"));
+        assertFalse(SCell.isText("=aaa"));
+        assertFalse(SCell.isText("123"));
     }
 }
