@@ -40,7 +40,7 @@ public CellEntry(String s)
 
     }
     /**determines the integer value of a string
-     * if its between
+     * if its between a-z or A-Z
      * @param s representing "X"
      * @return the value of X as a number
      */
@@ -71,5 +71,10 @@ public CellEntry(String s)
         return this.Y;
         else
         {return Ex2Utils.ERR;}
+    }
+    @Override
+    public String toString()
+    {
+        return getX()+Integer.toString(getY());
     }
 }

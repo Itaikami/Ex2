@@ -20,7 +20,10 @@ class SCellTest {
 
     @org.junit.jupiter.api.Test
     void eval() {
+        Ex2Sheet table=new Ex2Sheet(4,4);
+        table.set(0,0,"5");
         assertEquals(SCell.eval("(1+2)*3/(2/5)"),22.5);
+        assertEquals(SCell.eval("a0"),5);
     }
 
     @org.junit.jupiter.api.Test

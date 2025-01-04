@@ -8,6 +8,8 @@ public class SCell implements Cell {
     private String line;
     private int type;
     // Add your code here
+    public  static Sheet table;
+
 
     public SCell(String s) {
         // Add your code here
@@ -16,6 +18,18 @@ public class SCell implements Cell {
         setType(deterType(s));
     }
 
+    /** returns the data of a cell in a certain coordinates in the spreadsheet
+     * @param s represents a string in a form  of an entry cell
+     * @return a string representing the cell in those coordinates
+     */
+    public static String getData(String s)
+{
+    String a="";
+    Index2D c=new CellEntry(s);
+    if (table.isIn(c.getX(),c.getY()))
+    {a=table.get(c.getX(), c.getY()).getData();}
+    return a;
+}
     /**determines the type of string (whether it's text, number, formula or an error)
      *
      * @param s represents the line of a cell
@@ -23,6 +37,7 @@ public class SCell implements Cell {
      */
     public static int deterType(String s)
 {
+
     if(isText(s))
         return Ex2Utils.TEXT;
     if(isNumber(s))
@@ -156,6 +171,8 @@ public class SCell implements Cell {
         if (form.charAt(0) == '(' && form.indexOf(')') == form.length() - 1) {
             return eval(form.substring(1, form.length() - 1));
         }
+        if(!getData(form).isEmpty())
+        {eval(getData(form));}
         if (mainop == -1)
         {throw new IllegalArgumentException(Ex2Utils.ERR_FORM);}
             switch (form.charAt(mainop)) {

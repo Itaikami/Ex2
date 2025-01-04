@@ -41,7 +41,12 @@ public class Ex2Sheet implements Sheet {
     public Cell get(String cords) {
         Cell ans = null;
         // Add your code here
-
+        try
+        {ans=table[CellEntry.deterX(cords.substring(0,1))][Integer.parseInt(cords.substring(1))];}
+        catch (ArrayIndexOutOfBoundsException|NumberFormatException e)
+        {
+            return null;
+        }
         /////////////////////
         return ans;
     }
@@ -74,7 +79,11 @@ public class Ex2Sheet implements Sheet {
     public boolean isIn(int xx, int yy) {
         boolean ans = xx>=0 && yy>=0;
         // Add your code here
-
+        try {
+            ans=(xx>= width()||yy>= height());
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {  ans=false;}
         /////////////////////
         return ans;
     }
