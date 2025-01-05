@@ -7,13 +7,16 @@ package assignments.ex2;
 public class SCell implements Cell {
     private String line;
     private int type;
+    private static Ex2Sheet table;
     // Add your code here
-    public  static Sheet table;
+
 
 
     public SCell(String s) {
         // Add your code here
 
+        if (s == null || s.equals(Ex2Utils.EMPTY_CELL)) {
+            s = "";}
         setData(s);
         setType(deterType(s));
     }
@@ -24,6 +27,8 @@ public class SCell implements Cell {
      */
     public static String getData(String s)
 {
+    if(table==null)
+        table=new Ex2Sheet(Ex2Utils.WIDTH,Ex2Utils.HEIGHT);
     String a="";
     Index2D c=new CellEntry(s);
     if (table.isIn(c.getX(),c.getY()))
@@ -37,7 +42,8 @@ public class SCell implements Cell {
      */
     public static int deterType(String s)
 {
-
+    if (s == null || s.equals(Ex2Utils.EMPTY_CELL)) {
+        return Ex2Utils.ERR;}
     if(isText(s))
         return Ex2Utils.TEXT;
     if(isNumber(s))
@@ -59,8 +65,9 @@ public class SCell implements Cell {
      */
     public static boolean isText(String s)
     {
+
         boolean ans=true;
-        if(isNumber(s)||isFormula(s)||(s.charAt(0)=='='))
+        if(s.charAt(0)=='='||isNumber(s))
         {ans = false;}
         return ans;
     }
@@ -71,6 +78,7 @@ public class SCell implements Cell {
      */
     public static boolean isNumber(String s)
     {
+
         boolean ans=true;
         double num;
         try {
@@ -163,7 +171,8 @@ public class SCell implements Cell {
      */
     public static double eval(String form) {
 
-
+        if(table==null)
+            table=new Ex2Sheet(Ex2Utils.WIDTH,Ex2Utils.HEIGHT);
         int mainop = findIndOfMainOp(form);
         if (isNumber(form)) {
             return Double.parseDouble(form);
@@ -171,8 +180,9 @@ public class SCell implements Cell {
         if (form.charAt(0) == '(' && form.indexOf(')') == form.length() - 1) {
             return eval(form.substring(1, form.length() - 1));
         }
-        if(!getData(form).isEmpty())
-        {eval(getData(form));}
+        CellEntry c=new CellEntry(form);
+        if(c.isValid()&&!getData(form).equals(Ex2Utils.EMPTY_CELL))
+        {return eval(getData(form));}
         if (mainop == -1)
         {throw new IllegalArgumentException(Ex2Utils.ERR_FORM);}
             switch (form.charAt(mainop)) {
@@ -207,6 +217,9 @@ public class SCell implements Cell {
     public static boolean isFormula(String s)//
     {
         boolean ans=true;
+        CellEntry c=new CellEntry(s);
+        if(c.isValid()&&!getData(s).equals(Ex2Utils.EMPTY_CELL))
+        {return isFormula(table.get(c.getX(),c.getY()).getData());}
         if((s.charAt(0)!='='))
         {ans=false;}
         String form = s.substring(1);
@@ -244,7 +257,7 @@ public class SCell implements Cell {
     @Override
 public void setData(String s) {
         // Add your code here
-        line = s;
+        this.line = s;
         /////////////////////
     }
     @Override
@@ -259,9 +272,11 @@ public void setData(String s) {
 
     @Override
     public void setType(int t) {
-        type = t;
+        this.type = t;
     }
-
+    public static void setTable(Ex2Sheet table) {
+        SCell.table = table;
+    }
     @Override
     public void setOrder(int t) {
         // Add your code here

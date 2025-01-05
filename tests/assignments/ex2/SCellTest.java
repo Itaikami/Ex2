@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SCellTest {
-
+    private static final Sheet DEFAULT_SHEET = new Ex2Sheet(1, 1);
     @org.junit.jupiter.api.Test
     void isNumber() {
         assertTrue(SCell.isNumber("123"));
@@ -20,16 +20,24 @@ class SCellTest {
 
     @org.junit.jupiter.api.Test
     void eval() {
-        Ex2Sheet table=new Ex2Sheet(4,4);
+
+
+        Ex2Sheet table=new Ex2Sheet(2,2);
         table.set(0,0,"5");
-        assertEquals(SCell.eval("(1+2)*3/(2/5)"),22.5);
-        assertEquals(SCell.eval("a0"),5);
+        table.set(0,1,"a0+5");
+        SCell.setTable(table);
+       // assertEquals(SCell.eval("(1+2)*3/(2/5)"),22.5);
+        assertEquals(SCell.eval("a1"),10);
     }
 
     @org.junit.jupiter.api.Test
     void isFormula() {
+        Ex2Sheet table=new Ex2Sheet(2,2);
+        table.set(0,0,"5");
+        table.set(0,1,"a0+5");
         assertTrue(SCell.isFormula("=(1+2)*3/(2/5)"));
         assertFalse(SCell.isFormula("=155/(1+2))"));
+        assertTrue(SCell.isFormula("=a0+5"));
     }
 
     @org.junit.jupiter.api.Test

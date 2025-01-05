@@ -8,7 +8,7 @@ public class Ex2Sheet implements Sheet {
 
     // ///////////////////
     public Ex2Sheet(int x, int y) {
-        table = new SCell[x][y];
+        table = new Cell[x][y];
         for(int i=0;i<x;i=i+1) {
             for(int j=0;j<y;j=j+1) {
                 table[i][j] = new SCell("");
@@ -77,10 +77,10 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public boolean isIn(int xx, int yy) {
-        boolean ans = xx>=0 && yy>=0;
+        boolean ans=true;
         // Add your code here
         try {
-            ans=(xx>= width()||yy>= height());
+            ans=(xx>=0&&xx<width()&&yy>=0&&yy< height());
         }
         catch (ArrayIndexOutOfBoundsException e)
         {  ans=false;}

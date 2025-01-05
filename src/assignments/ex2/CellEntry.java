@@ -11,10 +11,12 @@ private String X;
 private int Y;
 public CellEntry(String s)
 {
-        setX(s.substring(0,1));
+
+    setX(s.substring(0,1));
         try{
     setY( Integer.parseInt(s.substring(1)));} catch (NumberFormatException e) {
             setY(-1);
+
         }
 
 }
@@ -48,6 +50,10 @@ public CellEntry(String s)
     {
         boolean found=false;
         int i=0,j=Ex2Utils.ERR;
+        if(SCell.isNumber(s)) {
+            found = true;
+            j=Integer.parseInt(s);
+        }
         while(!found&&i<26)
         {
             if(s.toUpperCase().equals(Ex2Utils.ABC[i]))

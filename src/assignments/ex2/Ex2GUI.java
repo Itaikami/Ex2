@@ -123,6 +123,7 @@ public class Ex2GUI {
 	 * @param yy the y coordinate of the required cell.
 	 */
 	private static void inputCell(int xx,int yy) {
+
 		if(table.isIn(xx,yy)) {
 			Cell cc = table.get(xx,yy);
 			String ww = cord+": "+cc.toString()+" : ";

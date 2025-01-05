@@ -8,11 +8,12 @@ class CellEntryTest {
 
     @Test
     void isValid() {
-        CellEntry s=new CellEntry("16");
+        CellEntry s=new CellEntry("a16");
         assertTrue(s.isValid());
     }
 
     @Test
     void deterX() {
+        assertEquals(CellEntry.deterX("a"),0);
     }
 }
