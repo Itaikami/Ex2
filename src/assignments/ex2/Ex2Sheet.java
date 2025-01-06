@@ -1,5 +1,7 @@
 package assignments.ex2;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 // Add your documentation below:
 
 public class Ex2Sheet implements Sheet {
@@ -24,10 +26,12 @@ public class Ex2Sheet implements Sheet {
     public String value(int x, int y) {
         String ans = Ex2Utils.EMPTY_CELL;
         // Add your code here
-
-        Cell c = get(x,y);
-        if(c!=null) {ans = c.toString();}
-
+if(isIn(x, y)) {
+    Cell c = get(x, y);
+    if (c != null) {
+        ans = c.toString();
+    }
+}
         /////////////////////
         return ans;
     }
@@ -92,10 +96,68 @@ public class Ex2Sheet implements Sheet {
     public int[][] depth() {
         int[][] ans = new int[width()][height()];
         // Add your code here
+        int d = 0, cnt = 0, max = width() * height();
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                ans[i][j] = -1;
 
-        // ///////////////////
+            }
+
+            // ///////////////////
+
+        }
         return ans;
     }
+    public static boolean isCirular(SCell c,Set<String> visited)
+    {
+
+         //if the set already contains the cell its circular
+        if(visited.contains(c.getData()))
+        {
+            return true;
+        }
+
+        Set<String> ref=reference(c.getData());
+
+
+    }
+
+    /**recives a string and returns a set containing its cell reference calls
+     * @param s the string representing a formula
+     * @return the set containing all the reference calls
+     */
+    public static Set<String> reference(String s)
+    {
+        Set<String> ref= new HashSet<>();
+        String[] f=s.split("[+/\\-()*]");
+        for (int i = 0; i < f.length; i++) {
+            CellEntry c=new CellEntry(f[i]);
+            if(c.isValid())
+            {
+                ref.add(f[i]);
+            }
+        }
+        return ref;
+    }
+    public static boolean canBeComputed(SCell c) {
+
+        if (c.getType() == Ex2Utils.TEXT)
+            return true;
+        if (c.getType() == Ex2Utils.NUMBER)
+            return true;
+        if (c.getType() == Ex2Utils.FORM)
+        {
+           String p=c.getData().substring(1);
+            //let's check if it's only a Cell entry
+            CellEntry i=new CellEntry(p);
+
+
+
+
+    }
+return true;
+    }
+
 
     @Override
     public void load(String fileName) throws IOException {
@@ -110,14 +172,164 @@ public class Ex2Sheet implements Sheet {
 
         /////////////////////
     }
+    /** calculates the value of a string representing a formula
+     *  assumes the form is valid and handles some exceptions
+     *  calls the function recursively using the last operator that needs to be done
+     * @param form the input string
+     * @return the calculated value of the formula
+     */
 
+    public double computeForm(String form) {
+        int mainop = findIndOfMainOp(form);
+        try {
+           double num= Double.parseDouble(form);
+           return num;
+        } catch (NumberFormatException _) {
+
+        }
+        if (form.charAt(0) == '(' && form.indexOf(')') == form.length() - 1) {
+            return computeForm(form.substring(1, form.length() - 1));
+        }
+        CellEntry c = new CellEntry(form);
+        if (c.isValid()&&isIn(c.getX(),c.getY())) {
+            return computeForm(eval(c.getX(),c.getY()));
+        }
+        if (mainop == -1) {
+            throw new IllegalArgumentException(Ex2Utils.ERR_FORM);
+        }
+        switch (form.charAt(mainop)) {
+            case '+': {
+                return (computeForm(form.substring(0, mainop)) + computeForm(form.substring(mainop + 1)));
+            }
+            case '-': {
+                return (computeForm(form.substring(0, mainop)) - computeForm(form.substring(mainop + 1)));
+            }
+            case '*': {
+                return (computeForm(form.substring(0, mainop)) * computeForm(form.substring(mainop + 1)));
+            }
+            case '/': {
+                double denominator = computeForm(form.substring(mainop + 1));
+                if (denominator == 0) {
+                    throw new ArithmeticException("Math_ERR");
+
+                }
+                return (computeForm(form.substring(0, mainop)) / computeForm(form.substring(mainop + 1)));
+
+
+            }
+
+        }
+        return Double.NaN;//invalid value in case the form is wrong
+    }
     @Override
     public String eval(int x, int y) {
         String ans = null;
         if(get(x,y)!=null) {ans = get(x,y).toString();}
+
+
+
         // Add your code here
 
         /////////////////////
         return ans;
         }
-}
+    /** finds the index of our main operator (the last one we need to calculate)
+     * op represents the current operators "value" ('*','/'=0.5,'+','-'=0,everything inside "()" is raised by 1)
+     * issog determines if the current operator is inside "()" or not
+     * curr represents the "value" of the operator in the current max index represented by ind
+     * @param form the input string representing a formula
+     * @return ind representing the index of the main operator
+     */
+    public static int findIndOfMainOp(String form)
+    {
+        int ind=-1;
+        boolean issog=false;
+        double op=0,curr=1.5;//(1+2*2)*3*4
+        for (int i = 0; i < form.length(); i++) {
+            char c=form.charAt(i);
+            if(c=='(')
+            {issog=true;}
+            if(c==')')
+            {issog=false;}
+            if(isOp(c))
+            {
+
+                switch (c)
+                {
+                    case '/','*':
+                    {
+                        op=0.5;
+                        break;
+                    }
+                    case '+','-':
+                    {
+                        op=0;
+                        break;
+                    }
+                }
+                if(issog)
+                {op++;}
+                if(op<curr||op==curr)
+                {
+                    ind=i;
+                    curr=op;
+                }
+            }
+
+
+        }
+
+
+
+        return ind;
+    }
+    /** casts a char to a string and checks if it is an Operator
+     *
+     * @param c represents a char within a formula
+     * @return true if c is an operator
+     */
+    public static boolean isOp(char c)
+    {
+        boolean ans=false;
+        int i=0;
+        String s =Character.toString(c);
+        while(!ans&&i<Ex2Utils.M_OPS.length)
+        {
+            if(s.equals(Ex2Utils.M_OPS[i]))
+            {    ans=true;}
+            i++;
+
+
+        }
+        return ans;
+    }
+    /** receives a String and checks if it's a valid formula
+     * @param s
+     * @return true if it's a valid formula and false if it isn't
+     */
+    public  boolean isFormula(String s)//
+    {
+        if((s.charAt(0)!='='))
+        {return false;}
+
+        String form = s.substring(1);
+        CellEntry c=new CellEntry(form);
+        //if it is a valid cellEntry check if its data after calculation
+        if(c.isValid()&&!get(c.getX(),c.getY()).getData().equals(Ex2Utils.EMPTY_CELL))
+        {return isFormula("="+eval(c.getX(),c.getY()));}
+
+        try {
+            int opIndex = findIndOfMainOp(form);
+            if (opIndex == -1) {
+                //if we don't have an op lets see if it's a number
+                if(Double.parseDouble(form)==computeForm(form)) {
+                    return true;
+                }
+            }
+            //if we find an op we call the function recursively with its left and right sides
+            String lhs = "=" + form.substring(0, opIndex);
+            String rhs = "=" + form.substring(opIndex+1);
+            return isFormula(lhs) && isFormula(rhs);}
+        catch (Exception e)
+        {return false;}
+}}

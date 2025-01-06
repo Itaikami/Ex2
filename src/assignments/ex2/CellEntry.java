@@ -50,10 +50,7 @@ public CellEntry(String s)
     {
         boolean found=false;
         int i=0,j=Ex2Utils.ERR;
-        if(SCell.isNumber(s)) {
-            found = true;
-            j=Integer.parseInt(s);
-        }
+
         while(!found&&i<26)
         {
             if(s.toUpperCase().equals(Ex2Utils.ABC[i]))
