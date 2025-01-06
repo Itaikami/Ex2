@@ -1,5 +1,6 @@
 package assignments.ex2;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 // Add your documentation below:
@@ -108,36 +109,35 @@ if(isIn(x, y)) {
         }
         return ans;
     }
-    public static boolean isCirular(SCell c,Set<String> visited)
+    public  boolean isCirular(CellEntry c,ArrayList<String> all)
     {
+        String val=get(c.getX(),c.getY()).getData();
+       ArrayList<String> s=reference(val);
+       if(s.contains(val))
+       {return true;}
+        s.add(val);
 
-         //if the set already contains the cell its circular
-        if(visited.contains(c.getData()))
-        {
-            return true;
-        }
-
-        Set<String> ref=reference(c.getData());
 
 
     }
 
-    /**recives a string and returns a set containing its cell reference calls
+    /**recives a string and returns an array containing its cell reference calls
      * @param s the string representing a formula
-     * @return the set containing all the reference calls
+     * @return the array containing all the reference calls
      */
-    public static Set<String> reference(String s)
+    public static ArrayList<String> reference(String s)
     {
-        Set<String> ref= new HashSet<>();
+
         String[] f=s.split("[+/\\-()*]");
+        ArrayList<String> temp=new ArrayList<>();
         for (int i = 0; i < f.length; i++) {
             CellEntry c=new CellEntry(f[i]);
             if(c.isValid())
             {
-                ref.add(f[i]);
+                temp.add(f[i]);
             }
         }
-        return ref;
+        return temp;
     }
     public static boolean canBeComputed(SCell c) {
 
