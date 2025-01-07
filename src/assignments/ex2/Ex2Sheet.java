@@ -97,7 +97,18 @@ if(isIn(x, y)) {
     public void eval() {
         int[][] dd = depth();
         // Add your code here
+        for (int i = 0; i < dd.length; i++) {
+            for (int j = 0; j < dd[0].length; j++) {
+                CellEntry c=new CellEntry((char)('A'+i)+Integer.toString(j));
+                //if the cell has depth and can be computed set the value to be the calculated cell
+                if(dd[i][j]!=-1)
+                {
+                    if(canBeComputed(c))
+                    {set(i,j,Double.toString(computeForm(table[i][j].getData())));}
+                }
+            }
 
+        }
         // ///////////////////
     }
 
@@ -155,7 +166,7 @@ if(isIn(x, y)) {
             for (int j = 0; j < height(); j++) {
                 CellEntry c=new CellEntry((char)('A'+i)+Integer.toString(j));
                 if (canBeComputed(c))
-          ans[i][j]=singleDepth(i,j,ans);
+                {ans[i][j]=singleDepth(i,j,ans);}
         }}
 
         return ans;
@@ -195,7 +206,10 @@ if(isIn(x, y)) {
     {
 
         String[] f=s.split("[+/\\-()*]");
+        if(f.length==1&& f[0].isEmpty())
+        {f=new String[0];}
         ArrayList<String> temp=new ArrayList<>();
+
         for (int i = 0; i < f.length; i++) {
             CellEntry c=new CellEntry(f[i]);
             if(c.isValid())
@@ -204,33 +218,26 @@ if(isIn(x, y)) {
             }
         }
         return temp;
-    }
-    public boolean canBeComputed(CellEntry c) {
-        Cell i=table[c.getX()][c.getY()];
-        if (i.getType() == Ex2Utils.TEXT)
-            return false;
-        if (i.getType() == Ex2Utils.NUMBER)
-            return true;
-        if (i.getType() == Ex2Utils.FORM)
-        {
-           String p=i.getData().substring(1);
-           ArrayList<String> ref=reference(p);
-            if (isCircular(c,ref))
-            {return false;}
-            for (String s:ref)
-            {
-                CellEntry current=new CellEntry(s);
-                //if one of the reference call in a cell is empty or a text it cant be computed
-                if(get(current.toString()).getType()==Ex2Utils.TEXT||get(current.toString()).getData().equals(Ex2Utils.EMPTY_CELL))
-                {return false;}
+    } public boolean canBeComputed(CellEntry c) {
+        Cell i = get(c.getX(),c.getY());
+        if (i.getData().isEmpty()) return false;
+        if (i.getType() == Ex2Utils.TEXT) return false;
+        if (i.getType() == Ex2Utils.NUMBER) return true;
+        if(i.getType()==Ex2Utils.FORM)
+
+        {ArrayList<String> ref = reference(i.getData().substring(1));
+        if (isCircular(c, ref)) return false;
+
+        for (String s : ref) {
+            CellEntry current = new CellEntry(s);
+            if (get(current.toString()).getType() == Ex2Utils.TEXT ||
+                    get(current.toString()).getData().equals(Ex2Utils.EMPTY_CELL)) {
+                return false;
             }
-
-
-
-
+        }}
+        return true;
     }
-return true;
-    }
+
 
 
     @Override
@@ -255,6 +262,7 @@ return true;
 
     public double computeForm(String form) {
         int mainop = findIndOfMainOp(form);
+
         try {
            double num= Double.parseDouble(form);
            return num;
