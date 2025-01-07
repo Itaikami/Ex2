@@ -38,6 +38,16 @@ if(isIn(x, y)) {
             case Ex2Utils.FORM:
             {
                ans= Double.toString(computeForm(c.getData()));
+               break;
+            }
+            case Ex2Utils.ERR_FORM_FORMAT:
+            {
+                ans=Ex2Utils.ERR_FORM;
+                break;
+            }
+            case Ex2Utils.ERR_CYCLE_FORM:
+            {
+                ans=Ex2Utils.ERR_CYCLE;
             }
         }
     }
