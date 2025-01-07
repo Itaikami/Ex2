@@ -2,6 +2,7 @@ package assignments.ex2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 // Add your documentation below:
 
@@ -29,7 +30,7 @@ public class Ex2Sheet implements Sheet {
         // Add your code here
 if(isIn(x, y)) {
     Cell c = get(x, y);
-    if (c != null) {
+    if (!c.getData().equals(Ex2Utils.EMPTY_CELL)) {
         switch (c.getType())
         {
             case Ex2Utils.TEXT, Ex2Utils.NUMBER:
@@ -37,7 +38,7 @@ if(isIn(x, y)) {
                 break;}
             case Ex2Utils.FORM:
             {
-               ans= Double.toString(computeForm(c.getData()));
+               ans= Double.toString(computeForm(c.getData())).substring(1);
                break;
             }
             case Ex2Utils.ERR_FORM_FORMAT:
@@ -48,6 +49,7 @@ if(isIn(x, y)) {
             case Ex2Utils.ERR_CYCLE_FORM:
             {
                 ans=Ex2Utils.ERR_CYCLE;
+                break;
             }
         }
     }
@@ -112,6 +114,32 @@ if(isIn(x, y)) {
         return ans;
     }
 
+    /** this function calculates the depth of a singular cell in the table
+     * @param x,y represent the coordinates of the cell
+     * @return the depth which is 1+max of all the dependencies
+     */
+    public int singleDepth(int x,int y,int[][] dep)
+    {
+        //if it is already calculated return it as is
+        if(dep[x][y]!=-1)
+        {return dep[x][y];}
+        Cell c=get(x,y);
+        if (c.getType()==Ex2Utils.TEXT)
+        {return -1;}
+        if (c.getType()==Ex2Utils.NUMBER)
+        {    return 0;}
+        ArrayList<String> ref=reference(c.getData());
+        int maxDepth=0;
+        for (String s:ref)
+        {
+            CellEntry current=new CellEntry(s);
+            int sDepth=singleDepth(current.getX(), current.getY(),dep);
+            maxDepth=Math.max(sDepth,maxDepth);
+        }
+
+
+        return 1+maxDepth;
+    }
     @Override
     public int[][] depth() {
         int[][] ans = new int[width()][height()];
@@ -122,22 +150,41 @@ if(isIn(x, y)) {
                 ans[i][j] = -1;
 
             }
-
-            // ///////////////////
-
         }
+        for (int i = 0; i < width(); i++) {
+            for (int j = 0; j < height(); j++) {
+                CellEntry c=new CellEntry((char)('A'+i)+Integer.toString(j));
+                if (canBeComputed(c))
+          ans[i][j]=singleDepth(i,j,ans);
+        }}
+
         return ans;
     }
-    public  boolean isCirular(CellEntry c,ArrayList<String> all)
+
+    /** checks if there is a circular dependency in a cell
+     * @param c represents the current cell we are checking
+     * @param ref all of c's cell references
+     * @return whether there is a circular dependency or not
+     */
+    public  boolean isCircular(CellEntry c,ArrayList<String> ref)
     {
-        String val=get(c.getX(),c.getY()).getData();
-       ArrayList<String> s=reference(val);
-       if(s.contains(val))
-       {return true;}
-        s.add(val);
+        String cellInd=c.toString();
+        if(ref.contains(cellInd))
+        {return true;}
+        ref.add(cellInd);
+        String val = get(c.getX(), c.getY()).getData();
+        //returns all the dependencies of c's content
+        ArrayList<String> tlut=new ArrayList<String>(reference(val));
+        for (String s : tlut) {
+            CellEntry nextCell = new CellEntry(s); // צור CellEntry מה-ref
+            if (isCircular(nextCell, ref)) {
+                return true;
+            }
 
-
-
+        }
+        ref.remove(cellInd);
+        //if we didn't find a cyclical dependency return false
+        return false;
     }
 
     /**recives a string and returns an array containing its cell reference calls
@@ -158,17 +205,25 @@ if(isIn(x, y)) {
         }
         return temp;
     }
-    public static boolean canBeComputed(SCell c) {
-
-        if (c.getType() == Ex2Utils.TEXT)
+    public boolean canBeComputed(CellEntry c) {
+        Cell i=table[c.getX()][c.getY()];
+        if (i.getType() == Ex2Utils.TEXT)
+            return false;
+        if (i.getType() == Ex2Utils.NUMBER)
             return true;
-        if (c.getType() == Ex2Utils.NUMBER)
-            return true;
-        if (c.getType() == Ex2Utils.FORM)
+        if (i.getType() == Ex2Utils.FORM)
         {
-           String p=c.getData().substring(1);
-            //let's check if it's only a Cell entry
-            CellEntry i=new CellEntry(p);
+           String p=i.getData().substring(1);
+           ArrayList<String> ref=reference(p);
+            if (isCircular(c,ref))
+            {return false;}
+            for (String s:ref)
+            {
+                CellEntry current=new CellEntry(s);
+                //if one of the reference call in a cell is empty or a text it cant be computed
+                if(get(current.toString()).getType()==Ex2Utils.TEXT||get(current.toString()).getData().equals(Ex2Utils.EMPTY_CELL))
+                {return false;}
+            }
 
 
 

@@ -20,6 +20,7 @@ public CellEntry(String s)
         }
 
 }
+
     @Override
     public boolean isValid() {
         boolean  ans=false;
