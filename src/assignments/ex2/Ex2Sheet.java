@@ -30,7 +30,16 @@ public class Ex2Sheet implements Sheet {
 if(isIn(x, y)) {
     Cell c = get(x, y);
     if (c != null) {
-        ans = c.toString();
+        switch (c.getType())
+        {
+            case Ex2Utils.TEXT, Ex2Utils.NUMBER:
+            {ans=c.getData();
+                break;}
+            case Ex2Utils.FORM:
+            {
+               ans= Double.toString(computeForm(c.getData()));
+            }
+        }
     }
 }
         /////////////////////
