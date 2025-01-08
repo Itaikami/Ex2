@@ -199,8 +199,12 @@ if(isIn(x, y)) {
         ArrayList<String> tlut=new ArrayList<String>(reference(val));
         for (String s : tlut) {
             CellEntry nextCell = new CellEntry(s);
+            int t=get(nextCell.toString()).getType();
+            if(t==Ex2Utils.TEXT||t==Ex2Utils.ERR_FORM_FORMAT||get(nextCell.toString()).getData().equals(Ex2Utils.EMPTY_CELL))
+            {get(nextCell.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
+            return false;}
 
-            if (isCircular(nextCell, ref)||get(nextCell.toString()).getType()==Ex2Utils.ERR_CYCLE_FORM) {
+            if (isCircular(nextCell, ref)||t==Ex2Utils.ERR_CYCLE_FORM) {
                 return true;
             }
 
@@ -245,7 +249,8 @@ if(isIn(x, y)) {
             {CellEntry temp= new CellEntry(s);
                 int t=get(temp.toString()).getType();
                 if(t==Ex2Utils.TEXT||t==Ex2Utils.ERR_FORM_FORMAT||get(temp.toString()).getData().equals(Ex2Utils.EMPTY_CELL))
-                {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);}
+                {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
+                return false;}
             }
         if (isCircular(c, ref))
         {   get(c.getX(),c.getY()).setType(Ex2Utils.ERR_CYCLE_FORM);
