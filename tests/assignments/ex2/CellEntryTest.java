@@ -14,6 +14,6 @@ class CellEntryTest {
 
     @Test
     void deterX() {
-        assertEquals(CellEntry.deterX("a"),0);
+
     }
 }

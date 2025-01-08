@@ -11,16 +11,25 @@ private String X;
 private int Y;
 public CellEntry(String s)
 {
-
+try {
     setX(s.substring(0,1));
+}catch (IndexOutOfBoundsException e)
+{setX("");}
+
         try{
-    setY( Integer.parseInt(s.substring(1)));} catch (NumberFormatException e) {
+    setY( Integer.parseInt(s.substring(1)));} catch (NumberFormatException |IndexOutOfBoundsException e) {
             setY(-1);
 
         }
 
 }
-
+public CellEntry(int x,int y)
+{
+    if(x>=0&&x<Ex2Utils.ABC.length)
+    {setX(deterXfromnumber(x));}
+    if(y>=0&&y<100)
+    {setY(y);}
+}
     @Override
     public boolean isValid() {
         boolean  ans=false;
@@ -42,12 +51,21 @@ public CellEntry(String s)
         this.Y=i;
 
     }
+    public static String deterXfromnumber(int n)
+    {
+        if(n>=0&&n<Ex2Utils.ABC.length)
+        {for (int i = 0; i < Ex2Utils.ABC.length; i++) {
+            if(n==i)
+            {return Ex2Utils.ABC[i];}
+        }}
+        return "";
+    }
     /**determines the integer value of a string
      * if its between a-z or A-Z
      * @param s representing "X"
      * @return the value of X as a number
      */
-    public static int deterX(String s)
+    public static int deterXfromstring(String s)
     {
         boolean found=false;
         int i=0,j=Ex2Utils.ERR;
@@ -66,7 +84,7 @@ public CellEntry(String s)
 
     @Override
     public int getX() {
-        return deterX(this.X);
+        return deterXfromstring(this.X);
     }
 
     @Override
@@ -79,6 +97,6 @@ public CellEntry(String s)
     @Override
     public String toString()
     {
-        return getX()+Integer.toString(getY());
+        return deterXfromnumber(getX())+Integer.toString(getY());
     }
 }

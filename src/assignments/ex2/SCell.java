@@ -49,13 +49,17 @@ public class SCell implements Cell {
         return Ex2Utils.NUMBER;
     try {
         boolean formula= isCellFormula(s);
+
         if(formula)
-        {return Ex2Utils.FORM;}
+        {
+
+            return Ex2Utils.FORM;}
+        else return Ex2Utils.ERR_FORM_FORMAT;
     }
     catch (Exception e)
     { return Ex2Utils.ERR_FORM_FORMAT;}
 
-    return Ex2Utils.ERR;
+
 }
     /** checks if a string is a "text"
      * if it is not a number or a formula or starts with '=' then it's a text

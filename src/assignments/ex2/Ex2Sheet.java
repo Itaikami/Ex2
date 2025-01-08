@@ -66,9 +66,10 @@ if(isIn(x, y)) {
     @Override
     public Cell get(String cords) {
         Cell ans = null;
+        CellEntry c=new CellEntry(cords);
         // Add your code here
         try
-        {ans=table[CellEntry.deterX(cords.substring(0,1))][Integer.parseInt(cords.substring(1))];}
+        {ans=table[CellEntry.deterXfromstring(cords.substring(0,1))][Integer.parseInt(cords.substring(1))];}
         catch (ArrayIndexOutOfBoundsException|NumberFormatException e)
         {
             return null;
@@ -99,12 +100,17 @@ if(isIn(x, y)) {
         // Add your code here
         for (int i = 0; i < dd.length; i++) {
             for (int j = 0; j < dd[0].length; j++) {
-                CellEntry c=new CellEntry((char)('A'+i)+Integer.toString(j));
+                CellEntry c=new CellEntry(i,j);
                 //if the cell has depth and can be computed set the value to be the calculated cell
                 if(dd[i][j]!=-1)
                 {
-                    if(canBeComputed(c))
-                    {set(i,j,Double.toString(computeForm(table[i][j].getData())));}
+                    if (!canBeComputed(c))
+                    {set(i,j,table[i][j].getData());
+                    }
+                    if(canBeComputed(c)&&table[i][j].getType()==Ex2Utils.FORM)
+                    {set(i,j,Double.toString(computeForm(table[i][j].getData().substring(1))));}
+                    if (table[i][j].getType()==Ex2Utils.NUMBER)
+                    {set(i,j,table[i][j].getData());}
                 }
             }
 
@@ -136,11 +142,13 @@ if(isIn(x, y)) {
         {return dep[x][y];}
         Cell c=get(x,y);
         if (c.getType()==Ex2Utils.TEXT)
-        {return -1;}
+        {return 0;}
         if (c.getType()==Ex2Utils.NUMBER)
         {    return 0;}
         ArrayList<String> ref=reference(c.getData());
         int maxDepth=0;
+        if(ref.isEmpty())
+        {return 0;}
         for (String s:ref)
         {
             CellEntry current=new CellEntry(s);
@@ -164,8 +172,9 @@ if(isIn(x, y)) {
         }
         for (int i = 0; i < width(); i++) {
             for (int j = 0; j < height(); j++) {
-                CellEntry c=new CellEntry((char)('A'+i)+Integer.toString(j));
-                if (canBeComputed(c))
+                CellEntry c=new CellEntry(i,j);
+                //if we can calculate it right now, or it is a string we can set the depth of the cell
+                if (c.isValid()&&(canBeComputed(c)||get(i,j).getType()==Ex2Utils.TEXT))
                 {ans[i][j]=singleDepth(i,j,ans);}
         }}
 
@@ -179,6 +188,8 @@ if(isIn(x, y)) {
      */
     public  boolean isCircular(CellEntry c,ArrayList<String> ref)
     {
+        if(ref==null)
+        {ref=new ArrayList<>();}
         String cellInd=c.toString();
         if(ref.contains(cellInd))
         {return true;}
@@ -187,8 +198,9 @@ if(isIn(x, y)) {
         //returns all the dependencies of c's content
         ArrayList<String> tlut=new ArrayList<String>(reference(val));
         for (String s : tlut) {
-            CellEntry nextCell = new CellEntry(s); // צור CellEntry מה-ref
-            if (isCircular(nextCell, ref)) {
+            CellEntry nextCell = new CellEntry(s);
+
+            if (isCircular(nextCell, ref)||get(nextCell.toString()).getType()==Ex2Utils.ERR_CYCLE_FORM) {
                 return true;
             }
 
@@ -204,11 +216,14 @@ if(isIn(x, y)) {
      */
     public static ArrayList<String> reference(String s)
     {
-
-        String[] f=s.split("[+/\\-()*]");
-        if(f.length==1&& f[0].isEmpty())
-        {f=new String[0];}
         ArrayList<String> temp=new ArrayList<>();
+        String[] f=s.split("[+/\\-()*]");
+
+
+        for (int i = 0; i < f.length; i++) {
+            f[i]=f[i].toUpperCase();
+        }
+
 
         for (int i = 0; i < f.length; i++) {
             CellEntry c=new CellEntry(f[i]);
@@ -226,11 +241,22 @@ if(isIn(x, y)) {
         if(i.getType()==Ex2Utils.FORM)
 
         {ArrayList<String> ref = reference(i.getData().substring(1));
-        if (isCircular(c, ref)) return false;
+            for (String s:ref)
+            {CellEntry temp= new CellEntry(s);
+                int t=get(temp.toString()).getType();
+                if(t==Ex2Utils.TEXT||t==Ex2Utils.ERR_FORM_FORMAT||get(temp.toString()).getData().equals(Ex2Utils.EMPTY_CELL))
+                {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);}
+            }
+        if (isCircular(c, ref))
+        {   get(c.getX(),c.getY()).setType(Ex2Utils.ERR_CYCLE_FORM);
+            return false;}
+
 
         for (String s : ref) {
             CellEntry current = new CellEntry(s);
-            if (get(current.toString()).getType() == Ex2Utils.TEXT ||
+            if (!current.isValid())
+                return false;
+            else if (get(current.toString()).getType() == Ex2Utils.TEXT ||
                     get(current.toString()).getData().equals(Ex2Utils.EMPTY_CELL)) {
                 return false;
             }
@@ -274,7 +300,9 @@ if(isIn(x, y)) {
         }
         CellEntry c = new CellEntry(form);
         if (c.isValid()&&isIn(c.getX(),c.getY())) {
-            return computeForm(eval(c.getX(),c.getY()));
+            if(canBeComputed(c))
+            {return computeForm(eval(c.getX(),c.getY()));}
+
         }
         if (mainop == -1) {
             throw new IllegalArgumentException(Ex2Utils.ERR_FORM);
@@ -395,10 +423,12 @@ if(isIn(x, y)) {
         {return false;}
 
         String form = s.substring(1);
+        if(form.charAt(0)=='('&&form.indexOf(')')==form.length()-1)
+        {form=form.substring(1,form.length()-1);}
         CellEntry c=new CellEntry(form);
-        //if it is a valid cellEntry check if its data after calculation
-        if(c.isValid()&&!get(c.getX(),c.getY()).getData().equals(Ex2Utils.EMPTY_CELL))
-        {return isFormula("="+eval(c.getX(),c.getY()));}
+        //if it is a valid cellEntry then it is a formula
+        if(c.isValid())
+        {return true;}
 
         try {
             int opIndex = findIndOfMainOp(form);
