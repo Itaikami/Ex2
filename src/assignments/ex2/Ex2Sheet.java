@@ -247,12 +247,13 @@ public class Ex2Sheet implements Sheet {
         }
         return temp;
     } public boolean canBeComputed(CellEntry c) {
-        Cell i = get(c.getX(),c.getY());
+        Cell i = get(c.toString());
         if (i.getData().equals(Ex2Utils.EMPTY_CELL)||i.getData().isEmpty()) return false;
         if (i.getType() == Ex2Utils.TEXT) return false;
         if (i.getType() == Ex2Utils.NUMBER) return true;
         if(i.getType()==Ex2Utils.FORM)
         {
+
 
             HashSet<String> ref = reference(i.getData().substring(1));
             if(ref.isEmpty())
@@ -265,9 +266,6 @@ public class Ex2Sheet implements Sheet {
                 {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
                 return false;}
                 CellEntry temp = new CellEntry(s);
-//                if (!canBeComputed(temp))
-//                {   get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
-//                    return false;}
 
                     HashSet<String>tempRef = reference(get(s).getData());
 
@@ -333,11 +331,9 @@ public class Ex2Sheet implements Sheet {
         }
         CellEntry c = new CellEntry(form);
         if (c.isValid()&&isIn(c.getX(),c.getY())) {
-            if(canBeComputed(c)&&form.charAt(0)=='=')
-            {return computeForm(get(c.getX(),c.getY()).getData().substring(1));}
-            else if (canBeComputed(c)) {
-                return computeForm(get(c.toString()).getData());
-            }
+            if(canBeComputed(c))
+            {return computeForm(get(form).getData().substring(1));}
+
 
         }
         if (mainop == -1) {

@@ -12,7 +12,7 @@ private int Y;
 public CellEntry(String s)
 {
 try {
-    setX(s.substring(0,1));
+    setX(s.substring(0,1).toUpperCase());
 }catch (IndexOutOfBoundsException e)
 {setX("");}
 
