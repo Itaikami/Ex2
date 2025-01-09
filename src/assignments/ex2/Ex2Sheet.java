@@ -251,8 +251,10 @@ public class Ex2Sheet implements Sheet {
         if (i.getData().equals(Ex2Utils.EMPTY_CELL)||i.getData().isEmpty()) return false;
         if (i.getType() == Ex2Utils.TEXT) return false;
         if (i.getType() == Ex2Utils.NUMBER) return true;
-        if(i.getType()==Ex2Utils.FORM)
-        {
+        if(!isFormula(i.getData()))
+        {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
+        return false;}
+
 
 
             HashSet<String> ref = reference(i.getData().substring(1));
@@ -265,7 +267,10 @@ public class Ex2Sheet implements Sheet {
                 if(get(s).getData().equals(Ex2Utils.EMPTY_CELL)||get(s).getType()==Ex2Utils.TEXT||get(s).getType()==Ex2Utils.ERR_FORM_FORMAT)
                 {get(c.toString()).setType(Ex2Utils.ERR_FORM_FORMAT);
                 return false;}
+
                 CellEntry temp = new CellEntry(s);
+
+
 
                     HashSet<String>tempRef = reference(get(s).getData());
 
@@ -285,13 +290,14 @@ public class Ex2Sheet implements Sheet {
 
         for (String s : ref) {
             CellEntry current = new CellEntry(s);
+
             if (!current.isValid())
                 return false;
             else if (get(current.toString()).getType() == Ex2Utils.TEXT ||
                     get(current.toString()).getData().equals(Ex2Utils.EMPTY_CELL)) {
                 return false;
             }
-        }}
+        }
         return true;
     }
 
@@ -331,9 +337,10 @@ public class Ex2Sheet implements Sheet {
         }
         CellEntry c = new CellEntry(form);
         if (c.isValid()&&isIn(c.getX(),c.getY())) {
-            if(canBeComputed(c))
+            if(canBeComputed(c)&&isFormula(get(c.toString()).getData()))
             {return computeForm(get(form).getData().substring(1));}
-
+            if(canBeComputed(c)&&get(form).getType()==Ex2Utils.NUMBER)
+                return computeForm(get(form).getData());
 
         }
         if (mainop == -1) {
@@ -487,6 +494,7 @@ public class Ex2Sheet implements Sheet {
             //if we find an op we call the function recursively with its left and right sides
             String lhs = "=" + form.substring(0, opIndex);
             String rhs = "=" + form.substring(opIndex+1);
+
             return isFormula(lhs) && isFormula(rhs);}
         catch (Exception e)
         {return false;}
