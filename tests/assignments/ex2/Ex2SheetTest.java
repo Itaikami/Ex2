@@ -3,12 +3,13 @@ package assignments.ex2;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class Ex2SheetTest {
     Ex2Sheet sheet = new Ex2Sheet();
-    ArrayList<String> ref= new ArrayList<>();
+    HashSet<String> ref= new HashSet<>();
     @Test
     void isIn() {
     }

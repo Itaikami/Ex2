@@ -99,4 +99,8 @@ public CellEntry(int x,int y)
     {
         return deterXfromnumber(getX())+Integer.toString(getY());
     }
+
+    public boolean equals(CellEntry c) {
+        return c.getX()==getX()&&c.getY()==getY();
+    }
 }

@@ -8,7 +8,6 @@ public class SCell implements Cell {
     private String line;
     private int type;
     private static Ex2Sheet table;
-    // Add your code here
 
 
 
@@ -19,6 +18,9 @@ public class SCell implements Cell {
             s = "";}
         setData(s);
         setType(deterType(s));
+
+
+
     }
 
     /** returns the data of a cell in a certain coordinates in the spreadsheet
@@ -150,6 +152,8 @@ public void setData(String s) {
     public static void setTable(Ex2Sheet table) {
         SCell.table = table;
     }
+
+
     @Override
     public void setOrder(int t) {
         // Add your code here
