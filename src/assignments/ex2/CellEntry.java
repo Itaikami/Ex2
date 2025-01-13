@@ -9,7 +9,11 @@ import java.util.Objects;
 public class CellEntry  implements Index2D {
 private String X;
 private int Y;
-public CellEntry(String s)
+
+    /** a basic constructor for CellEntry which handles Exceptions
+     * @param s is the String that we build the CellEntry from
+     */
+    public CellEntry(String s)
 {
 try {
     setX(s.substring(0,1).toUpperCase());
@@ -23,7 +27,12 @@ try {
         }
 
 }
-public CellEntry(int x,int y)
+
+    /** A constructor for CellEntry that receives 2 integers and creates a CellEntry
+     * @param x the column of the cellentry
+     * @param y the row of the cellentry
+     */
+    public CellEntry(int x,int y)
 {
     if(x>=0&&x<Ex2Utils.ABC.length)
     {setX(deterXfromnumber(x));}
@@ -51,6 +60,11 @@ public CellEntry(int x,int y)
         this.Y=i;
 
     }
+
+    /**Determines the Column of the CellEntry from an integer
+     * @param n the number which is cast to a letter
+     * @return a letter representing the column
+     */
     public static String deterXfromnumber(int n)
     {
         if(n>=0&&n<Ex2Utils.ABC.length)

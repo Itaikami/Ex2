@@ -1,16 +1,15 @@
 package assignments.ex2;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 // Add your documentation below:
 
+/**this class represents the spreadsheet itself which consists of cells with
+ * cellEntrys and calculates all of our formulas and saves all the data in a table
+ */
 public class Ex2Sheet implements Sheet {
     private Cell[][] table;
-    // Add your code here
 
-    // ///////////////////
     public Ex2Sheet(int x, int y) {
         table = new Cell[x][y];
         for(int i=0;i<x;i=i+1) {
@@ -23,7 +22,6 @@ public class Ex2Sheet implements Sheet {
     public Ex2Sheet() {
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
     }
-
     @Override
     public String value(int x, int y) {
         String ans = Ex2Utils.EMPTY_CELL;
@@ -220,9 +218,9 @@ public class Ex2Sheet implements Sheet {
         return false;
     }
 
-    /**recives a string and returns an array containing its cell reference calls
+    /**receives a string and returns a HashSet containing its cell reference calls
      * @param s the string representing a formula
-     * @return the array containing all the reference calls
+     * @return the HashSet containing all the reference calls
      */
     public static HashSet<String> reference(String s)
     {
@@ -246,6 +244,10 @@ public class Ex2Sheet implements Sheet {
             }
         }
         return temp;
+        /** Checks whether data inside a cell entry could be computed or not
+         * @param c represents cellentry which data we need to check
+         * @return if it can be computed or not
+         */
     } public boolean canBeComputed(CellEntry c) {
         Cell i = get(c.toString());
         if (i.getData().equals(Ex2Utils.EMPTY_CELL)||i.getData().isEmpty()) return false;
@@ -486,8 +488,7 @@ public class Ex2Sheet implements Sheet {
 
         return ind;
     }
-    /** casts a char to a string and checks if it is an Operator
-     *
+    /** casts a char to a string and checks if it is an Operator('+','-','*','/')
      * @param c represents a char within a formula
      * @return true if c is an operator
      */
@@ -507,7 +508,7 @@ public class Ex2Sheet implements Sheet {
         return ans;
     }
     /** receives a String and checks if it's a valid formula
-     * @param s
+     * @param s is the String we need to check
      * @return true if it's a valid formula and false if it isn't
      */
     public  boolean isFormula(String s)//
