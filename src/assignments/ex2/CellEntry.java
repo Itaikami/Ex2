@@ -36,8 +36,10 @@ try {
 {
     if(x>=0&&x<Ex2Utils.ABC.length)
     {setX(deterXfromnumber(x));}
+    else setX("-1");
     if(y>=0&&y<100)
     {setY(y);}
+    else setY(-1);
 }
     @Override
     public boolean isValid() {
