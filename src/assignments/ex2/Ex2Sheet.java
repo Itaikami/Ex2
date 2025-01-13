@@ -1,5 +1,5 @@
 package assignments.ex2;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -306,16 +306,56 @@ public class Ex2Sheet implements Sheet {
     @Override
     public void load(String fileName) throws IOException {
         // Add your code here
+        File file = new File(fileName);
+        if (!file.exists())
+            throw new IOException("File not found: " + fileName);
+        try (BufferedReader load = new BufferedReader(new FileReader(file))) { //starts to read the file but skips the first line
+            String line = load.readLine();
+            while ((line = load.readLine()) != null) {
+                String[] parts = line.split(",");
+                set(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), parts[2].trim());
+            }
+            System.out.println("File loaded successfully");
+        }catch (IOException e){
+        e.printStackTrace();
+            throw new IOException("Error loading the file.");}
 
-        /////////////////////
     }
+
+
+
 
     @Override
     public void save(String fileName) throws IOException {
         // Add your code here
+        File file = new File(fileName);
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+
+            writer.write("Your saved table :)\n");
+
+            // we go over all the cells and keep only the ones that aren't empty
+            for (int i = 0; i < Ex2Utils.WIDTH; i++) {
+                for (int j = 0; j < Ex2Utils.HEIGHT; j++) {
+                    Cell cell = get(i, j);
+
+                    if (!cell.getData().equals(Ex2Utils.EMPTY_CELL) && !cell.getData().isEmpty()) {
+                        // we save it in a string in the requested format
+                        String cellData = cell.getData();
+
+                            writer.write(i + "," + j + "," + cellData + "\n");
+
+                    }
+                }
+            }
+
+            System.out.println("File saved: " + file.getAbsolutePath());
+        } catch (IOException e) {
+            // if there is any error in saving we will print out the error
+            e.printStackTrace();
+            throw new IOException("Error saving the file.");
         /////////////////////
-    }
+    }}
     /** calculates the value of a string representing a formula
      *  assumes the form is valid and handles some exceptions
      *  calls the function recursively using the last operator that needs to be done

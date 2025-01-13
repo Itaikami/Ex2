@@ -1,5 +1,5 @@
 package assignments.ex2;
-// Add your documentation below:
+
 
 /** This Class represents each cell in the spreadsheet and allows us to set a different type to each cell whether it is
  * a text, a number or a formula, and we can perform our operators with each cell that isn't a text.
